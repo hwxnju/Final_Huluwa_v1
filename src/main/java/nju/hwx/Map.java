@@ -1,6 +1,6 @@
 package nju.hwx;
 
-class Map{
+class Map{/**地图类，记录每个位置的生物*/
     private Creature map[][] = new Creature[16][9];
     Map(){}
     boolean isOccupied(int x,int y){

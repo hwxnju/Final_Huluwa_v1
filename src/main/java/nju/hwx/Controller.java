@@ -69,8 +69,8 @@ public class Controller {
              * 设置存活的葫芦娃数量和妖怪数量
              */
             this.isUnderPlaying = false;
-            this.numOfAliveHulu = 7;
-            this.numOfAliveMonster = 10;
+            Creature.aliveHuluNum = 7;
+            Creature.aliveMonsterNum = 10;
 
             /**
              * 添加7个葫芦娃、一个爷爷、一个蛇精、一个蝎子精、四种小怪各两个
@@ -146,14 +146,6 @@ public class Controller {
         pane.getChildren().add(creature.getCreatureView());
         if(!creature.getIsIndifferent())
             pane.getChildren().add(creature.getBloodView());
-//        try {
-//            creature.setBlood(100);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        creature.getBloodView().setX(creature.getPosX()*64);
-//        creature.getBloodView().setY(creature.getPosY()*64);
-//        pane.getChildren().add(creature.bloodView);
     }
 
 

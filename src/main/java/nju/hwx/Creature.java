@@ -38,6 +38,9 @@ public abstract class Creature implements Runnable{
         }
     }
 
+    protected static int aliveHuluNum;
+    protected static int aliveMonsterNum;
+
     protected CreatureType type;/**生物类型*/
     protected String name;/**名字*/
     protected boolean isAlive;/**是否还活着*/
@@ -83,7 +86,7 @@ public abstract class Creature implements Runnable{
         return this.posY;
     }
 
-    public void getHurt(){
+    public void getHurt(){/**当前生物受到25点伤害*/
         if(this.blood != 0) {
             this.blood -= 25;
             if(this.blood == 75)
@@ -101,7 +104,12 @@ public abstract class Creature implements Runnable{
         }
     }
 
-    public static void suicide(final Creature c){
+    public static void suicide(final Creature c){/**当前生物血量为0，执行自杀方法，在地图上去除该生物*/
+        if(!c.isEvil && aliveHuluNum > 0)
+            aliveHuluNum--;
+        if(c.isEvil && aliveMonsterNum > 0)
+            aliveMonsterNum--;
+
         c.isAlive = false;
         c.map.set(c.getPosX(),c.getPosY(),null);
         Platform.runLater(new Runnable(){
@@ -120,7 +128,7 @@ public abstract class Creature implements Runnable{
             }
         });
     }
-    public synchronized void attack(int x,int y) {
+    public synchronized void attack(int x,int y) {/**对（x，y）位置的生物进行阵营和是否为中立生物进行判断，若判断不是一个阵营并不是中立生物，则进行攻击*/
         try {
             if (map.isOccupied(x, y) && !map.isIndifferent(x, y) && (this.isEvil ^ map.isEvil(x,y))) {
                 Random r = new Random(System.currentTimeMillis());
@@ -142,7 +150,7 @@ public abstract class Creature implements Runnable{
         return this.bloodView;
     }
 
-    protected static synchronized void testEnemy(Creature c){
+    protected static synchronized void testEnemy(Creature c){/**检查周围是不是有敌人，判断是否进入战斗状态*/
         try{
         if(!c.isIndifferent){
             c.isFighting = false;
@@ -238,9 +246,9 @@ public abstract class Creature implements Runnable{
 
     public void run(){
         try {
-            while (this.isAlive) {
+            while (this.isAlive && (aliveHuluNum > 0 && aliveMonsterNum > 0)) {
                 testEnemy(this);
-                if(!isFighting)
+                if(!isFighting)/**如果不在战斗状态则每个回合随机移动，否则则站在原地战斗*/
                     randomMove(this);
                 else {
                     if(this.isEvil && this.getPosX() > 0)
