@@ -23,8 +23,8 @@ hwxnju@gmail.com
 开始游戏后，各生物体能够每回合结束时自动随机移动，当葫芦娃和怪物相遇时，会互相殴打（葫芦娃只能观察到其上方、下方和右方的怪物，怪物只能观察到上方、下方和左方的葫芦娃）。葫芦娃和怪物都初始具有100滴血，其中葫芦娃每回合殴打怪物导致怪物掉25滴血，怪物殴打葫芦娃每回合葫芦娃掉25滴血，但是怪物有50%的几率收到反噬，自损25滴血。双方一直战斗下去直到一方全部被打死。
 
 ## 游戏展示
-
-	![](https://raw.githubusercontent.com/hwxnju/Final_Huluwa_v1/master/src/main/resources/v1.0.gif)
+	
+![](https://raw.githubusercontent.com/hwxnju/Final_Huluwa_v1/master/src/main/resources/v1.0.gif)
 
 ## 项目结构
 
