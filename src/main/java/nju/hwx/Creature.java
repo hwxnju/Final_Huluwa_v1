@@ -84,7 +84,6 @@ public abstract class Creature implements Runnable{
     }
 
     public void getHurt(){
-        System.out.println(this.blood);
         if(this.blood != 0) {
             this.blood -= 25;
             if(this.blood == 75)
@@ -180,9 +179,6 @@ public abstract class Creature implements Runnable{
         posX = 0;
         posY = 0;
         blood = 100;
-//        this.bloodView = new ImageView();
-//        Image image = new Image("blood100.jpg");
-//        this.bloodView.setImage(image);
     }
 
 
@@ -198,13 +194,7 @@ public abstract class Creature implements Runnable{
             bloodView.setY(y * 64);
         }
     }
-//    void setBlood(int b) throws BloodException {
-//        if(b != 0 && b != 25 && b != 50 && b != 100) {
-//            throw new BloodException();
-//        }
-//        Image image = new Image("blood"+b+".jpg");
-//        this.bloodView.setImage(image);
-//    }
+
 
     public static synchronized void randomMove(final Creature c){
 
@@ -270,108 +260,6 @@ public abstract class Creature implements Runnable{
         }catch(Exception e){
             e.printStackTrace();
         }
-    }
-
-}
-
-class Hulu extends Creature{
-    public enum Color{
-        c1("赤"),c2("橙"),c3("黄"),c4("绿"),c5("青"),c6("蓝"),c7("紫");
-        String color;
-        Color(String color){
-            this.color = color;
-        }
-        String getColor(){
-            return this.color;
-        }
-    }
-
-    Color color;
-    int ranking;
-
-
-    Hulu(int rank){
-        super();
-        this.ranking = rank;
-        this.type = CreatureType.valueOf("Hulu"+rank);
-        this.name = this.type.getName();
-        this.color = Color.valueOf("c"+rank);
-
-        /**初始化图片*/
-        this.creatureView = new ImageView();
-        Image image = new Image("Hulu"+rank+".jpg");
-        this.creatureView.setImage(image);
-        this.bloodView = new ImageView();
-        this.bloodView.setImage(imgBlood100);
-
-
-    }
-
-
-
-}
-
-class Grandfa extends Creature{
-    Grandfa(){
-        super();
-        this.type = CreatureType.Grandfa;
-        this.name = this.type.getName();
-        this.isIndifferent = true;
-
-        /**初始化图片*/
-        this.creatureView = new ImageView();
-        Image image = new Image("Grandfa.jpg");
-        this.creatureView.setImage(image);
-        this.bloodView = new ImageView();
-        this.bloodView.setImage(imgBlood100);
-    }
-}
-
-class MonSnake extends Creature{
-    MonSnake(){
-        super();
-        this.type = CreatureType.MonSnake;
-        this.name = this.type.getName();
-        this.isEvil = true;
-
-        /**初始化图片*/
-        this.creatureView = new ImageView();
-        Image image = new Image("MonSnake.jpg");
-        this.creatureView.setImage(image);
-        this.bloodView = new ImageView();
-        this.bloodView.setImage(imgBlood100);
-    }
-}
-
-class MonScorpion extends Creature{
-    MonScorpion(){
-        super();
-        this.type = CreatureType.MonScorpion;
-        this.name = this.type.getName();
-        this.isEvil = true;
-
-        /**初始化图片*/
-        this.creatureView = new ImageView();
-        Image image = new Image("MonScorpion.jpg");
-        this.creatureView.setImage(image);
-        this.bloodView = new ImageView();
-        this.bloodView.setImage(imgBlood100);
-    }
-}
-
-class MonRetinue extends Creature{
-    MonRetinue(int rank){
-        super();
-        this.type = CreatureType.valueOf("MonRetinue"+rank);
-        this.name = this.type.getName();
-        this.isEvil = true;
-
-        /**初始化图片*/
-        this.creatureView = new ImageView();
-        Image image = new Image("MonRetinue"+rank+".jpg");
-        this.creatureView.setImage(image);
-        this.bloodView = new ImageView();
-        this.bloodView.setImage(imgBlood100);
     }
 
 }
