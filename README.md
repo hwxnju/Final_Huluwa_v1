@@ -20,7 +20,7 @@ hwxnju@gmail.com
 
 ## 游戏展示
 	
-	![](https://raw.githubusercontent.com/hwxnju/Final_Huluwa_v1/master/src/main/resources/v1.0.gif)
+	![](https://github.com/hwxnju/Final_Huluwa_v1/blob/master/src/main/resources/v1.0.gif)
 
 ## 项目结构
 
