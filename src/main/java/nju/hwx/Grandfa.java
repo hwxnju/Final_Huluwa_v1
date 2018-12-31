@@ -7,7 +7,7 @@ class Grandfa extends Creature{
     Grandfa(){
         super();
         this.type = CreatureType.Grandfa;
-        this.name = this.type.getName();
+        this.name = this.type.name();
         this.isIndifferent = true;
 
         /**初始化图片*/

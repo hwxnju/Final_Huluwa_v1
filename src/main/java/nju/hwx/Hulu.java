@@ -23,7 +23,7 @@ class Hulu extends Creature{
         super();
         this.ranking = rank;
         this.type = CreatureType.valueOf("Hulu"+rank);
-        this.name = this.type.getName();
+        this.name = this.type.name();
         this.color = Color.valueOf("c"+rank);
 
         /**初始化图片*/

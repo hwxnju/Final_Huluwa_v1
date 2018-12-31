@@ -13,13 +13,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         try {
             final Controller controller  = new Controller();
-            primaryStage.setScene(new Scene(controller.initPane(),1024,576));
-            controller.initGame();
+            primaryStage.setScene(new Scene(controller.initPane(),1024,596));
             primaryStage.setResizable(false);
             primaryStage.setTitle("葫芦娃");
             primaryStage.show();
             controller.setPrimaryStage(primaryStage);
-            controller.startGame();
+//            controller.startGame();
         } catch(Exception e) {
             e.printStackTrace();
         }

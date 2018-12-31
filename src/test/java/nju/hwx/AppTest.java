@@ -13,8 +13,14 @@ public class AppTest
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
+    public void testMap()
     {
-        assertTrue( true );
+
+        Map m = new Map();
+        m.set(2,3,null);
+        assertTrue( !m.isOccupied(2,3));
     }
+
+
+
 }

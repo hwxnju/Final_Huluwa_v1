@@ -9,13 +9,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Random;
 
 import static java.lang.Math.abs;
 
+@Deprecated
 class BloodException extends Exception{}
+
 class MapNullException extends Exception{}
 
+@MyAnnotation
 public abstract class Creature implements Runnable{
     public enum CreatureType{
 
@@ -33,6 +38,7 @@ public abstract class Creature implements Runnable{
             this.name = name;
         }
 
+        @Deprecated
         String getName(){
             return this.name;
         }
@@ -40,6 +46,8 @@ public abstract class Creature implements Runnable{
 
     protected static int aliveHuluNum;
     protected static int aliveMonsterNum;
+    protected static int round;
+    protected int creatureRound;
 
     protected CreatureType type;/**生物类型*/
     protected String name;/**名字*/
@@ -66,6 +74,7 @@ public abstract class Creature implements Runnable{
         return this.name;
     }
 
+    @Deprecated
     public boolean getIsAlive(){
         return this.isAlive;
     }
@@ -180,6 +189,7 @@ public abstract class Creature implements Runnable{
 
     Creature(){
         type = null;
+        creatureRound = 0;
         isAlive = true;
         isEvil = false;
         isIndifferent = false;
@@ -193,8 +203,7 @@ public abstract class Creature implements Runnable{
     public void setPos(int x,int y){/**position in map*/
         map.set(posX,posY,null);
         map.set(x,y,this);
-        posX = x;
-        posY = y;
+        setCreaturePos(x,y);
         creatureView.setX(x*64);
         creatureView.setY(y*64);
         if(!this.isIndifferent) {
@@ -203,6 +212,10 @@ public abstract class Creature implements Runnable{
         }
     }
 
+    public void setCreaturePos(int x,int y){
+        posX = x;
+        posY = y;
+    }
 
     public static synchronized void randomMove(final Creature c){
 
@@ -216,9 +229,11 @@ public abstract class Creature implements Runnable{
             tx = r.nextInt(16);
             ty = r.nextInt(9);
         }
+
         map.set(c.posX,c.posY,null);
         newx = tx;
         newy = ty;
+
         map.set(newx,newy,c);
 
         Platform.runLater(new Runnable(){
@@ -238,6 +253,8 @@ public abstract class Creature implements Runnable{
 
                 );
                 t.play();
+                if(Controller.isSavingFile)
+                    saveStep(round,c.name,newx,newy);
                 c.setPos(newx,newy);
             }
         });
@@ -246,7 +263,11 @@ public abstract class Creature implements Runnable{
 
     public void run(){
         try {
-            while (this.isAlive && (aliveHuluNum > 0 && aliveMonsterNum > 0)) {
+            while (Controller.isUnderPlaying && this.isAlive && (aliveHuluNum > 0 && aliveMonsterNum > 0)) {
+                if(aliveHuluNum == 0 || aliveMonsterNum == 0)
+                    Controller.isUnderPlaying = false;
+                if(creatureRound > round)
+                    round++;
                 testEnemy(this);
                 if(!isFighting)/**如果不在战斗状态则每个回合随机移动，否则则站在原地战斗*/
                     randomMove(this);
@@ -261,12 +282,28 @@ public abstract class Creature implements Runnable{
                         attack(this.getPosX(),this.getPosY()+1);
                 }
 
-
-                Thread.sleep(1000);
+                creatureRound++;
+                Thread.sleep(1000);/**每个生物每个回合后睡1s*/
                 Thread.yield();
             }
         }catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private static void saveStep(int round, String name,int newX, int newY){
+        if(Controller.gameFile != null){
+            FileWriter fw=null;
+            BufferedWriter bw=null;
+            try{
+
+                fw=new FileWriter(Controller.gameFile.getAbsoluteFile(),true);
+                bw=new BufferedWriter(fw);
+                bw.write(round +'-'+ name +'-'+ newX +'-'+newY + '\n');
+                bw.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

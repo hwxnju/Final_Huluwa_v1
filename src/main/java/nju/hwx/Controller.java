@@ -1,35 +1,29 @@
 package nju.hwx;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
+import javax.xml.ws.Action;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static java.lang.Math.abs;
-import static java.lang.Thread.sleep;
 
 public class Controller {
 
-    public AnchorPane pane;
+    public BorderPane pane;
+
     public Stage primaryStage;
 
-    private boolean isUnderPlaying;
+    public static boolean isUnderPlaying;
 
-    private int numOfAliveHulu;
-    private int numOfAliveMonster;
     private ArrayList<Creature> Hulus = new ArrayList<Creature>();
     private ArrayList<Creature> Monsters = new ArrayList<Creature>();
     private ArrayList<Creature> Grandfas = new ArrayList<Creature>();
@@ -37,16 +31,19 @@ public class Controller {
     private ExecutorService execPool;
 
 
+    public static File gameFile;/**游戏文件*/
+    public static boolean isSavingFile = false;/**正在保存游戏文件*/
+
+
 
     Controller(){
         this.isUnderPlaying = false;
-        this.numOfAliveHulu = 0;
-        this.numOfAliveMonster = 0;
     }
 
-    public AnchorPane initPane(){
-        this.pane = new AnchorPane();
-        pane.setPrefSize(1024,576);/**(16*9)*64 pixel*/
+
+    public BorderPane initPane(){
+        this.pane = new BorderPane();
+        pane.setPrefSize(1024,596);/**(16*9)*64 pixel*/
 
         /**
          * 设置背景
@@ -55,6 +52,55 @@ public class Controller {
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         pane.setBackground(new Background(myBI));
 
+        ButtonBar buttonBar = new ButtonBar();
+
+        Button startButton1 = new Button();
+        startButton1.setText("only start game");
+        startButton1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    isSavingFile = false;
+                    initGame();
+                    startGame();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        buttonBar.getButtons().add(startButton1);
+
+        Button startButton2 = new Button();
+        startButton2.setText("start game and save file");
+        startButton2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    gameFile = null;
+                    savefile();
+                    initGame();
+                    startGame();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        buttonBar.getButtons().add(startButton2);
+
+        Button replayButton = new Button();
+        replayButton.setText("replay");
+        replayButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    replay();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        buttonBar.getButtons().add(replayButton);
+        pane.setBottom(buttonBar);
         return pane;
     }
 
@@ -62,15 +108,21 @@ public class Controller {
         this.primaryStage = primaryStage;
     }
 
+    @Action
     public void initGame() throws Exception {
 
         try {
             /**
              * 设置存活的葫芦娃数量和妖怪数量
              */
-            this.isUnderPlaying = false;
+
             Creature.aliveHuluNum = 7;
             Creature.aliveMonsterNum = 10;
+
+            Creature.round = 0;
+            Hulus.clear();
+            Grandfas.clear();
+            Monsters.clear();
 
             /**
              * 添加7个葫芦娃、一个爷爷、一个蛇精、一个蝎子精、四种小怪各两个
@@ -116,6 +168,9 @@ public class Controller {
             setCreatureView(Monsters.get(8), 15, 7);
             setCreatureView(Monsters.get(9), 15, 8);
 
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("????????????");
@@ -123,22 +178,25 @@ public class Controller {
     }
 
     public void startGame()throws Exception{
-        this.isUnderPlaying = true;
-        /**
-         * 初始化线程池
-         */
-        execPool = Executors.newCachedThreadPool();
-        ArrayList<Creature> allCreature = new ArrayList<Creature>();
-        allCreature.addAll(Hulus);
-        allCreature.addAll(Grandfas);
-        allCreature.addAll(Monsters);
+        if(!this.isUnderPlaying) {
+            Creature.round = 0;
+            this.isUnderPlaying = true;
+            /**
+             * 初始化所有生物体的线程池
+             */
+            execPool = Executors.newCachedThreadPool();
+            ArrayList<Creature> allCreature = new ArrayList<Creature>();
+            allCreature.addAll(Hulus);
+            allCreature.addAll(Grandfas);
+            allCreature.addAll(Monsters);
 
-        for(int i = 0;i<18;i++) {
-            execPool.submit(allCreature.get(i));
+            for (int i = 0; i < 18; i++) {
+                execPool.submit(allCreature.get(i));
+            }
+            execPool.shutdown();
+
+            allCreature.clear();
         }
-
-
-        execPool.shutdown();
     }
 
     void setCreatureView(Creature creature, int posX, int posY) {
@@ -148,5 +206,36 @@ public class Controller {
             pane.getChildren().add(creature.getBloodView());
     }
 
+    private void savefile(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("游戏存档", "*.txt")
+        );
+        fileChooser.setTitle("游戏记录");
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            this.gameFile = file;
+            this.isSavingFile = true;
+        }
+        else{
+            this.gameFile = null;
+            this.isSavingFile = false;
+        }
+    }
+
+    private void replay(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("战斗记录", "*.txt")
+
+        );
+        fileChooser.setTitle("回放记录");
+        File file = fileChooser.showOpenDialog(primaryStage);
+        if (file != null) {
+
+        }
+    }
 
 }
+
+

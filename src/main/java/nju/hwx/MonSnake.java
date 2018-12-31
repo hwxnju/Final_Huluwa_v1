@@ -7,7 +7,7 @@ class MonSnake extends Creature{
     MonSnake(){
         super();
         this.type = CreatureType.MonSnake;
-        this.name = this.type.getName();
+        this.name = this.type.name();
         this.isEvil = true;
 
         /**初始化图片*/
